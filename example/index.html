@@ -1,8 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-1.4.0/leaflet.css" />
-    <script src="http://cdn.leafletjs.com/leaflet-1.4.0/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+
+
+    <!--<link rel="stylesheet" href="../leaflet/dist/leaflet.css" />-->
+    <!--<script src="../leaflet/dist/leaflet.js"></script>-->
+
+
     <script src="../leaflet.polygon.gradient.js"></script>
     <style type="text/css">
         html, body { height:100%; margin:0; overflow: hidden;}
@@ -15,11 +21,48 @@
 <body>
     <div id="map"></div>
     <script>
-        var map = L.map('map').setView([23.7, 121], 8);
+        var map = L.map('map').setView([40.99, -102.06], 6);
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         }).addTo(map);
 
 
+        var states = [{
+            "type": "Feature",
+            "properties": {"party": "Republican"},
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [[
+                    [-104.05, 48.99],
+                    [-97.22,  48.98],
+                    [-96.58,  45.94],
+                    [-104.03, 45.94],
+                    [-104.05, 48.99]
+                ]]
+            }
+        }, {
+            "type": "Feature",
+            "properties": {"party": "Democrat"},
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [[
+                    [-109.05, 41.00],
+                    [-102.06, 40.99],
+                    [-102.03, 36.99],
+                    [-109.04, 36.99],
+                    [-109.05, 41.00]
+                ]]
+            }
+        }];
+
+        L.geoJSON(states, {
+            style: function(feature) {
+                return {
+                    color: "#ff0000",
+                    // fillColor: "linear-gradient(90deg, red, yellow, blue, orange)",
+                    fillColor: "radial-gradient(90deg, red, yellow, blue, orange)",
+                };
+            }
+        }).addTo(map);
 
     </script>
 </body>
