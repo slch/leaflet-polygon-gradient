@@ -102,7 +102,7 @@
                 var gradient = L.SVG.create('linearGradient');
                 gradient.setAttribute('id', gradientId);
 
-                let arrMap = this._getColorArray(colorStr, ['linear-gradient(', ')']);
+                let arrMap = this._getColorArray(colorStr, ['linearGradient(', ')']);
                 this._addStops(gradient, arrMap);
 
                 this._addAngle(gradient, arrMap.angle);
