@@ -1,0 +1,22 @@
+{
+  "name": "leaflet-polygon-gradient",
+  "version": "1.0.0",
+  "description": "A plugin to fill SVG Path element with gradient color.",
+  "main": "leaflet.polygon.gradient.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HugeMountain/leaflet-polygon-gradient.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HugeMountain/leaflet-polygon-gradient/issues"
+  },
+  "homepage": "https://github.com/HugeMountain/leaflet-polygon-gradient#readme"
+}

@@ -8,7 +8,7 @@ A plugin to extend the Polygon Object to fill SVG Path element with gradient col
 
 ## npm
 
-
+npm install leaflet-polygon-gradient
 
 
 ## options
