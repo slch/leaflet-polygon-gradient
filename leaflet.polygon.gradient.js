@@ -9,7 +9,7 @@
         module.exports = factory(require('leaflet'));
     }
 
-    // attach your plugin to the global 'L' variable
+    // attach your plugin to the global 'L' letiable
     if (typeof window !== 'undefined' && window.L) {
         window.L.ArrowPath = factory(L);
     }
@@ -18,7 +18,7 @@
     L.SVG.include({
         _updateStyle: function (layer) {
 
-            var path = layer._path,
+            let path = layer._path,
                 options = layer.options;
 
             if (!path) {
@@ -56,9 +56,9 @@
             }
         },
         _polyFill(layer, path, options) {
-            var fillColor = options.fillColor;
-            var isLinearGradient = fillColor.match(/^linear-gradient\(/);
-            var isRadialGradient = fillColor.match(/^radial-gradient\(/);
+            let fillColor = options.fillColor;
+            let isLinearGradient = fillColor.match(/^linearGradient\(/);
+            let isRadialGradient = fillColor.match(/^radialGradient\(/);
 
             if (fillColor.match(/^#/)) {
                 path.setAttribute('fill', fillColor || options.color);
@@ -71,6 +71,109 @@
                 }
             } else if (fillColor.match(/^url\(/)) {
                 this._fillByImage(layer);
+            }
+        },
+        _addLinearGradient: function (layer, gradientOpt) {
+            let path = layer._path;
+            let colorStr = layer.options.fillColor;
+            let gradientId = 'gradient' + gradientOpt.index;
+
+            this._addDefs();
+
+            if (!gradientOpt.exist) {
+                let gradient = L.SVG.create('linearGradient');
+                gradient.setAttribute('id', gradientId);
+
+                let arrMap = this._getLinearProperties(colorStr, ['linearGradient(', ')']);
+                this._addStops(gradient, arrMap);
+
+                this._addAngle(gradient, arrMap.angle);
+
+                this._defs.appendChild(gradient);
+            }
+
+            path.setAttribute('fill', 'url(#' + gradientId + ')');
+        },
+        _addRadialGradient: function (layer, gradientOpt) {
+            let path = layer._path;
+            let colorStr = layer.options.fillColor;
+            let gradientId = 'gradient' + gradientOpt.index;
+
+            this._addDefs();
+
+            if (!gradientOpt.exist) {
+                let gradient = L.SVG.create('radialGradient');
+                gradient.setAttribute('id', gradientId);
+
+                let arrMap = this._getRadialProperties(colorStr, ['radialGradient(', ')']);
+                this._addStops(gradient, arrMap);
+
+                this._addAttribute(gradient, arrMap);
+                //
+                this._defs.appendChild(gradient);
+            }
+
+            path.setAttribute('fill', 'url(#' + gradientId + ')');
+        },
+        _addAttribute(gradient, arr) {
+            gradient.setAttribute('cx', arr.cx);
+            gradient.setAttribute('cy', arr.cy);
+            gradient.setAttribute('r', arr.r);
+            gradient.setAttribute('fx', arr.fx);
+            gradient.setAttribute('fy', arr.fy);
+        },
+
+        _getRadialProperties(colorStr, replaceArr) {
+            let string = colorStr;
+            for (let i = 0, l = replaceArr.length; i < l; i ++) {
+                let str = replaceArr[i];
+                string = string.replace(str, '');
+            }
+            let arrays = string.split(/[\,]+/);
+            let colorArr = arrays.slice(5);
+            let resColors = [];
+            let resOffsets = [];
+            let offsetNum = 0;
+            for (let i = 0, l = colorArr.length; i < l; i ++) {
+                let str = colorArr[i];
+                let opts = str.trim().split(/\s+/);
+                resColors.push(opts[0]);
+                if(opts.length > 1 || i === l - 1) {
+                    let offset;
+                    if(opts.length > 1) {
+                        offset = parseFloat(opts[1]);
+                    } else {
+                        offset = 100;
+                    }
+
+                    let len = resOffsets.length;
+                    if(offsetNum > 0) {
+                        let startNum = len - offsetNum - 1;
+                        let startVal = parseFloat(resOffsets[startNum]);
+                        let step = (offset - startVal) / (offsetNum + 1);
+                        for (let j = 1; j <= offsetNum; j ++) {
+                            resOffsets[startNum + j] = startVal + step * j + '%';
+                        }
+                        offsetNum = 0;
+                    }
+                    resOffsets.push(offset + '%');
+                } else {
+                    if(i !== 0) {
+                        offsetNum = offsetNum + 1;
+                        resOffsets.push('');
+                    } else {
+                        resOffsets.push('0%');
+                    }
+                }
+            }
+            return {
+                cx: arrays[0].trim(),
+                cy: arrays[1].trim(),
+                r: arrays[2].trim(),
+                fx: arrays[3].trim(),
+                fy: arrays[4].trim(),
+                colors: resColors,
+                offsets: resOffsets
             }
         },
         _addGradient(gradient) {
@@ -91,27 +194,6 @@
                 this._container.appendChild(this._defs);
             }
         },
-        _addLinearGradient: function (layer, gradientOpt) {
-            var path = layer._path;
-            var colorStr = layer.options.fillColor;
-            var gradientId = 'gradient' + gradientOpt.index;
-
-            this._addDefs();
-
-            if (!gradientOpt.exist) {
-                var gradient = L.SVG.create('linearGradient');
-                gradient.setAttribute('id', gradientId);
-
-                let arrMap = this._getColorArray(colorStr, ['linearGradient(', ')']);
-                this._addStops(gradient, arrMap);
-
-                this._addAngle(gradient, arrMap.angle);
-
-                this._defs.appendChild(gradient);
-            }
-
-            path.setAttribute('fill', 'url(#' + gradientId + ')');
-        },
         _addAngle(gradient, angle) {
             gradient.setAttribute('x1', '0');
             gradient.setAttribute('y1', '0');
@@ -129,8 +211,8 @@
                 gradient.appendChild(stop);
             }
         },
-        _getColorArray(colorStr, replaceArr) {
-            var string = colorStr;
+        _getLinearProperties(colorStr, replaceArr) {
+            let string = colorStr;
             for (let i = 0, l = replaceArr.length; i < l; i ++) {
                 let str = replaceArr[i];
                 string = string.replace(str, '');
@@ -179,40 +261,20 @@
                 offsets: resOffsets
             }
         },
-        _addRadialGradient: function (layer, gradientOpt) {
-            var path = layer._path;
-            var colorStr = layer.options.fillColor;
-            var gradientId = 'gradient' + gradientOpt.index;
 
-            this._addDefs();
-
-            if (!gradientOpt.exist) {
-                // var gradient = L.SVG.create('radialGradient');
-                // gradient.setAttribute('id', gradientId);
-                //
-                // let arrMap = this._getColorArray(colorStr, ['radial-gradient(', ')']);
-                // this._addStops(gradient, arrMap);
-                //
-                // this._addAngle(gradient, arrMap.angle);
-                //
-                // this._defs.appendChild(gradient);
-            }
-
-            path.setAttribute('fill', 'url(#' + gradientId + ')');
-        },
         //取自插件leaflet-polygon-fillPattern
         _fillByImage: function (layer) {
-            var path = layer._path,
+            let path = layer._path,
                 options = layer.options;
 
             this._addDefs();
 
-            var _img_url = options.fill.substring(4, options.fill.length - 1);
-            var _ref_id = _img_url + (Math.random() * Math.pow(10, 17) + Math.random() * Math.pow(10, 17));
+            let _img_url = options.fill.substring(4, options.fill.length - 1);
+            let _ref_id = _img_url + (Math.random() * Math.pow(10, 17) + Math.random() * Math.pow(10, 17));
             _ref_id += new Date().getUTCMilliseconds();
-            var _p = document.getElementById(_ref_id);
+            let _p = document.getElementById(_ref_id);
             if (!_p) {
-                var _im = new Image();
+                let _im = new Image();
                 _im.src = _img_url;
 
                 _p = L.SVG.create('pattern');
@@ -222,7 +284,7 @@
                 _p.setAttribute('patternUnits', 'userSpaceOnUse');
                 _p.setAttribute('width', '24');
                 _p.setAttribute('height', '24');
-                var _rect = L.SVG.create('rect');
+                let _rect = L.SVG.create('rect');
                 _rect.setAttribute('width', 24);
                 _rect.setAttribute('height', 24);
                 _rect.setAttribute('x', 0);
@@ -232,7 +294,7 @@
                 _p.appendChild(_rect);
                 this._defs.appendChild(_p);
 
-                var _img = L.SVG.create('image');
+                let _img = L.SVG.create('image');
                 _img.setAttribute('x', '0');
                 _img.setAttribute('y', '0');
                 _img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', _img_url);
