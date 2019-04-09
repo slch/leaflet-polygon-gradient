@@ -3,7 +3,7 @@ leaflet-polygon-gradient
 
 Extend the Polygon Object to fill SVG Path element with gradient color.
 
-Check out the []().
+[Demo](https://hugemountain.github.io/leaflet-polygon-gradient/example/index.html).
 
 ### Usage example
 
