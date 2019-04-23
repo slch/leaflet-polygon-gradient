@@ -14,18 +14,21 @@ npm install leaflet-polygon-gradient
 ## options
 
 ```
-fillColor: "linearGradient(angle, stopColor1 offset, stopColor2 20%, ………………)",
+1. fillColor: "linearGradient(angle, stopColor1 offset, stopColor2 20%, ………………)",
 angle: Control the gradient direction
 stopColor: The stop-color attribute of <stop> tags
 offset: The offset attribute of <stop> tags
 
 
-fillColor: "radialGradient(cx, cy, r, fx, fy, stopColor1 offset, stopColor2, stopColor3, ………………)",
-
+2. fillColor: "radialGradient(cx, cy, r, fx, fy, stopColor1 offset, stopColor2, stopColor3, ………………)",
 cx,cy,r: Define styles of the outermost circle 
 fx,fy: Define styles of the innermost circle 
 stopColor: The stop-color attribute of <stop> tags
 offset: The offset attribute of <stop> tags
+
+
+3. fillColor: 'url(blue-white.png)'
+fill with image
 
 ```
 

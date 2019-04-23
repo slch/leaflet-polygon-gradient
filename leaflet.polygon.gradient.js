@@ -262,55 +262,71 @@
             }
         },
 
-        //取自插件leaflet-polygon-fillPattern
+        //借鉴自插件leaflet-polygon-fillPattern
         _fillByImage: function (layer) {
             let path = layer._path,
-                options = layer.options;
-
+                options = layer.options,
+                fill = options.fillColor;
             this._addDefs();
 
-            let _img_url = options.fill.substring(4, options.fill.length - 1);
-            let _ref_id = _img_url + (Math.random() * Math.pow(10, 17) + Math.random() * Math.pow(10, 17));
-            _ref_id += new Date().getUTCMilliseconds();
-            let _p = document.getElementById(_ref_id);
-            if (!_p) {
-                let _im = new Image();
-                _im.src = _img_url;
-
-                _p = L.SVG.create('pattern');
-                _p.setAttribute('id', _ref_id);
-                _p.setAttribute('x', '0');
-                _p.setAttribute('y', '0');
-                _p.setAttribute('patternUnits', 'userSpaceOnUse');
-                _p.setAttribute('width', '24');
-                _p.setAttribute('height', '24');
-                let _rect = L.SVG.create('rect');
-                _rect.setAttribute('width', 24);
-                _rect.setAttribute('height', 24);
-                _rect.setAttribute('x', 0);
-                _rect.setAttribute('x', 0);
-                _rect.setAttribute('fill', options.fillColor || options.color);
-
-                _p.appendChild(_rect);
-                this._defs.appendChild(_p);
-
-                let _img = L.SVG.create('image');
-                _img.setAttribute('x', '0');
-                _img.setAttribute('y', '0');
-                _img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', _img_url);
-                _img.setAttribute('width', '24');
-                _img.setAttribute('height', '24');
-                _p.appendChild(_img);
-
-                _im.onload = function () {
-                    _p.setAttribute('width', _im.width);
-                    _p.setAttribute('height', _im.height);
-                    _img.setAttribute('width', _im.width);
-                    _img.setAttribute('height', _im.height);
-                };
+            let _img_url = fill.replace(/url\(+/, '').replace(/\)+/, '');/*.substring(4, fill.length - 1)*/
+            let _refOption = this._addRefId(_img_url);
+            let _ref_id = _img_url + _refOption.index;
+            if (!_refOption.exist) {
+                this._addPattern(_img_url, _ref_id, options);
             }
             path.setAttribute('fill', "url(#" + _ref_id + ")");
+        },
+        _addRefId(url) {
+            if (!this._imgUrls) {
+                this._imgUrls = [];
+            }
+            let index = this._imgUrls.indexOf(url);
+            if (index > -1) {
+                return {index: index, exist: true}
+            }
+            this._imgUrls.push(url);
+            return {index: this._imgUrls.length - 1, exist: false}
+        },
+        _addPattern(_img_url, _ref_id, options) {
+            let _im = new Image();
+            _im.src = _img_url;
+
+            let _p = L.SVG.create('pattern');
+            _p.setAttribute('id', _ref_id);
+            _p.setAttribute('x', '0');
+            _p.setAttribute('y', '0');
+            _p.setAttribute('patternUnits', 'userSpaceOnUse');
+            _p.setAttribute('width', '24');
+            _p.setAttribute('height', '24');
+
+            let _rect = L.SVG.create('rect');
+            _rect.setAttribute('width', 24);
+            _rect.setAttribute('height', 24);
+            _rect.setAttribute('x', 0);
+            _rect.setAttribute('x', 0);
+            _rect.setAttribute('fill', options.fillColor || options.color);
+
+            let _img = L.SVG.create('image');
+            _img.setAttribute('x', '0');
+            _img.setAttribute('y', '0');
+            _img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', _img_url);
+            _img.setAttribute('width', '24');
+            _img.setAttribute('height', '24');
+
+            _p.appendChild(_rect);
+            _p.appendChild(_img);
+
+            this._defs.appendChild(_p);
+
+            _im.onload = function () {
+                _p.setAttribute('width', _im.width);
+                _p.setAttribute('height', _im.height);
+                _img.setAttribute('width', _im.width);
+                _img.setAttribute('height', _im.height);
+            };
         }
+
     })
 
 }, window));
