@@ -55,7 +55,7 @@
                 path.setAttribute('fill', 'none');
             }
         },
-        _polyFill(layer, path, options) {
+        _polyFill: function (layer, path, options) {
             let fillColor = options.fillColor;
             let isLinearGradient = fillColor.match(/^linearGradient\(/);
             let isRadialGradient = fillColor.match(/^radialGradient\(/);
@@ -115,7 +115,7 @@
 
             path.setAttribute('fill', 'url(#' + gradientId + ')');
         },
-        _addAttribute(gradient, arr) {
+        _addAttribute: function (gradient, arr) {
             gradient.setAttribute('cx', arr.cx);
             gradient.setAttribute('cy', arr.cy);
             gradient.setAttribute('r', arr.r);
@@ -123,7 +123,7 @@
             gradient.setAttribute('fy', arr.fy);
         },
 
-        _getRadialProperties(colorStr, replaceArr) {
+        _getRadialProperties: function (colorStr, replaceArr) {
             let string = colorStr;
             for (let i = 0, l = replaceArr.length; i < l; i ++) {
                 let str = replaceArr[i];
@@ -176,7 +176,7 @@
                 offsets: resOffsets
             }
         },
-        _addGradient(gradient) {
+        _addGradient: function (gradient) {
             if (!this._gradientArray) {
                 this._gradientArray = [];
             }
@@ -188,20 +188,20 @@
             this._gradientArray.push(gradientStr);
             return {index: this._gradientArray.length - 1, exist: false}
         },
-        _addDefs() {
+        _addDefs: function () {
             if (!this._defs) {
                 this._defs = L.SVG.create('defs');
                 this._container.appendChild(this._defs);
             }
         },
-        _addAngle(gradient, angle) {
+        _addAngle: function (gradient, angle) {
             gradient.setAttribute('x1', '0');
             gradient.setAttribute('y1', '0');
             gradient.setAttribute('x2', '1');
             gradient.setAttribute('y2', '0');
             gradient.setAttribute('gradientTransform', 'rotate('+angle.replace('deg', '')+')');
         },
-        _addStops(gradient, options) {
+        _addStops: function (gradient, options) {
             let colors = options.colors;
             let offsets = options.offsets;
             for (let i = 0, len = colors.length; i < len; i++) {
@@ -211,7 +211,7 @@
                 gradient.appendChild(stop);
             }
         },
-        _getLinearProperties(colorStr, replaceArr) {
+        _getLinearProperties: function (colorStr, replaceArr) {
             let string = colorStr;
             for (let i = 0, l = replaceArr.length; i < l; i ++) {
                 let str = replaceArr[i];
@@ -277,7 +277,7 @@
             }
             path.setAttribute('fill', "url(#" + _ref_id + ")");
         },
-        _addRefId(url) {
+        _addRefId: function (url) {
             if (!this._imgUrls) {
                 this._imgUrls = [];
             }
@@ -288,7 +288,7 @@
             this._imgUrls.push(url);
             return {index: this._imgUrls.length - 1, exist: false}
         },
-        _addPattern(_img_url, _ref_id, options) {
+        _addPattern: function (_img_url, _ref_id, options) {
             let _im = new Image();
             _im.src = _img_url;
 
