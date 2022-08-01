@@ -4,7 +4,7 @@ A plugin to extend the Polygon Object to fill SVG Path element with gradient col
 
 ## Demo
 
-[demo](https://hugemountain.github.io/leaflet-polygon-gradient/example/index.html)
+[demo](https://web.archive.org/web/20210124230634/https://hugemountain.github.io/leaflet-polygon-gradient/example/index.html)
 
 ## npm
 
